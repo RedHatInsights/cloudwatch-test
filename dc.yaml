@@ -1,0 +1,72 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: cloudwatch-test
+  name: cloudwatch-test
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: cloudwatch-test
+    deploymentconfig: cloudwatch-test
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations:
+        openshift.io/generated-by: OpenShiftNewApp
+      creationTimestamp: null
+      labels:
+        app: cloudwatch-test
+        deploymentconfig: cloudwatch-test
+    spec:
+      containers:
+      - env:
+        - name: APP_SCRIPT
+          value: cw_test.py
+        - name: CW_AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              key: CW_AWS_ACCESS_KEY_ID
+              name: cloudwatch
+        - name: CW_AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              key: CW_AWS_SECRET_ACCESS_KEY
+              name: cloudwatch
+        image: docker-registry.default.svc:5000/cloudwatch-test/cloudwatch-test@sha256:068d4e38fc0bdd1f4891ffc2701d112f1d0a8da313b26ef5db063c53872f22d6
+        imagePullPolicy: Always
+        name: cloudwatch-test
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - cloudwatch-test
+      from:
+        kind: ImageStreamTag
+        name: cloudwatch-test:latest
+        namespace: cloudwatch-test
+      lastTriggeredImage: docker-registry.default.svc:5000/cloudwatch-test/cloudwatch-test@sha256:068d4e38fc0bdd1f4891ffc2701d112f1d0a8da313b26ef5db063c53872f22d6
+    type: ImageChange
