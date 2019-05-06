@@ -28,7 +28,7 @@ def _setup_cw_logging(logger):
 
     handler = watchtower.CloudWatchLogHandler(
         boto3_session=session,
-        log_group=os.environ.get("CW_LOG_GROUP", "platform_dev"),
+        log_group=os.environ.get("CW_LOG_GROUP", "platform-dev"),
         stream_name=namespace
     )
 
