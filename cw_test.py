@@ -33,6 +33,7 @@ def _setup_cw_logging(logger):
     )
 
     logger.addHandler(handler)
+    logger.info("CloudWatch logging ENABLED!")
 
 
 if __name__ == "__main__":
