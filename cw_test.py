@@ -41,4 +41,4 @@ if __name__ == "__main__":
     _setup_cw_logging(logging.root)
     while(True):
         logging.info("Testing CloudWatch logging functionality!")
-        time.sleep(1)
+        time.sleep(5)
